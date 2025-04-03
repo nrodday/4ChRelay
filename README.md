@@ -1,6 +1,6 @@
 # Wemos D1 Mini Shield - 4 Channel MOSFET Relay via I2C (6-30V)
 
-<img src="images/front.jpg" width="256"/> <img src="images/tilted.jpg" width="256"> <img src="images/unsoldered.jpg" width="256"> <a href="https://www.tindie.com/products/nilsrodday/wemos-d1-mini-shield-4-ch-mosfet-relay-6-30v/"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
+<img src="images/Front.jpg" width="256"/> <img src="images/Tilted.jpg" width="256"> <img src="images/Unsoldered.jpg" width="256"> <a href="https://www.tindie.com/products/nilsrodday/wemos-d1-mini-shield-4-ch-mosfet-relay-6-30v/"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
 This repository contains the sample YAML file to use with the "Wemos D1 Mini Shield - 4 Channel MOSFET Relay via I2C (6-30V)" shield. 
 
@@ -28,4 +28,4 @@ HA Module 4ChRelay - Relay 2
 HA Module 4ChRelay - Relay 3
 HA Module 4ChRelay - Relay 4
 
-<img src="images/labeled.jpg" width="256">
+<img src="images/Labeled.jpg" width="256">
