@@ -24,10 +24,10 @@ In order to use the shield, follow the steps below:
 
 3 Once flashing is done, attach your Wemos D1 Mini to the shield (pay attention to the correct orientation, 5V PIN is indicated on the shield and on the Wemos D1 Mini or have a look at the product pictures). Supply the shield with 6-30V, depending on the devices you would like to control via the relays. Do not connect USB and shield power input at the same time!
 
-HomeAssistant will detect a new ESPHome instance with 4 switches:
-HA Module 4ChRelay - Relay 1
-HA Module 4ChRelay - Relay 2
-HA Module 4ChRelay - Relay 3
-HA Module 4ChRelay - Relay 4
+HomeAssistant will detect a new ESPHome instance with 4 switches:<br/>
+HA Module 4ChRelay - Relay 1<br/>
+HA Module 4ChRelay - Relay 2<br/>
+HA Module 4ChRelay - Relay 3<br/>
+HA Module 4ChRelay - Relay 4<br/>
 
 <img src="images/Labeled.jpg" width="256">
