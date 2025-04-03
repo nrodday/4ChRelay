@@ -1,0 +1,80 @@
+substitutions:
+  devicename: hamodule4chrelay
+  friendly_name: HA Module 4ChRelay
+  device_description: 4ChRelay
+
+esphome:
+  name: $devicename
+  comment: ${device_description}
+
+esp8266:
+  board: d1_mini
+
+wifi:
+  ssid: "WIFINAME"
+  password: "WIFI_PASSWORD"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${friendly_name}"
+    password: "AP_PASSWORD"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+    password: "OTA_PASSWORD"
+
+
+# Set a global I²C connection
+i2c:
+  id: bus_a
+  sda: GPIO4
+  scl: GPIO5
+  scan: true
+
+# Initialize GPIO expander
+pca9554:
+  - id: 'pca9534_device'
+    address: 0x27 # Change address if necessary!
+
+# Individual outputs
+switch:
+  - platform: gpio
+    name: "Relay 1"
+    pin:
+      pca9554: pca9534_device
+      number: 0
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    name: "Relay 2"
+    pin:
+      pca9554: pca9534_device
+      number: 1
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    name: "Relay 3"
+    pin:
+      pca9554: pca9534_device
+      number: 2
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    name: "Relay 4"
+    pin:
+      pca9554: pca9534_device
+      number: 3
+      mode:
+        output: true
+      inverted: false
