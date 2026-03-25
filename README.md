@@ -1,10 +1,10 @@
 # 4 Channel Relay via I2C (6-30V)
 
-##D1 Mini version
+## D1 Mini version
 <img src="images/Front.jpg" width="256"/> <img src="images/Tilted.jpg" width="256"> <img src="images/Unsoldered.jpg" width="100"> <br/>
 
-##NanoESP32C6 version
-<img src="images/Nano_2.jpg" width="256"/> <img src="images/Nano_1.jpg" width="256"> <img src="images/Nano_3.jpg" width="100"> <br/>
+## NanoESP32C6 version
+<img src="images/Nano_2.jpg" width="256"/> <img src="images/Nano_1.jpg" width="50"> <img src="images/Nano_3.jpg" width="100"> <br/>
 
 <a href="https://www.tindie.com/products/nilsrodday/wemos-d1-mini-shield-4-ch-mosfet-relay-6-30v/"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
