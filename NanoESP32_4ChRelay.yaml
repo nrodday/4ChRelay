@@ -1,0 +1,244 @@
+substitutions:
+  device_name: hamodule-tps4h160aq
+  friendly_name: HA Module TPS4H160AQ
+  device_description: HA Module TPS4H160AQ
+
+esphome:
+  name: ${device_name}
+  comment: ${device_description}
+  project:
+    name: garlotec.TPS4H160AQ
+    version: "0.2" # Incremented version for the Flicker-Free update
+  on_boot:
+    priority: -10
+    then:
+      - wait_until:
+          api.connected:
+      - binary_sensor.template.publish: { id: relay_1_health_ui, state: OFF }
+      - binary_sensor.template.publish: { id: relay_2_health_ui, state: OFF }
+      - binary_sensor.template.publish: { id: relay_3_health_ui, state: OFF }
+      - binary_sensor.template.publish: { id: relay_4_health_ui, state: OFF }
+
+esp32:
+  flash_size: 16MB
+  variant: esp32c6
+
+logger:
+  level: DEBUG
+  baud_rate: 115200
+  hardware_uart: UART0
+
+wifi:
+  ssid: "WIFINAME"
+  password: "WIFI_PASSWORD"
+  ap:
+    ssid: "${friendly_name}"
+    password: "AP_PASSWORD"
+
+captive_portal:
+api:
+ota:
+  - platform: esphome
+    password: "OTA_PASSWORD"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+    mac_address:
+      name: "MAC Address"
+
+globals:
+  - id: relay_1_fault_latched
+    type: bool
+    initial_value: 'false'
+  - id: relay_2_fault_latched
+    type: bool
+    initial_value: 'false'
+  - id: relay_3_fault_latched
+    type: bool
+    initial_value: 'false'
+  - id: relay_4_fault_latched
+    type: bool
+    initial_value: 'false'
+
+i2c:
+  id: bus_a
+  sda: GPIO6
+  scl: GPIO7
+  scan: true
+  timeout: 50ms
+
+pca9554:
+  - id: pca_hub
+    address: 0x27
+
+switch:
+  # --- PHYSICAL GPIOs (Internal Only) ---
+  - platform: gpio
+    id: relay_1_raw
+    pin: { pca9554: pca_hub, number: 0, mode: OUTPUT }
+    internal: true
+    restore_mode: ALWAYS_OFF
+
+  - platform: gpio
+    id: relay_2_raw
+    pin: { pca9554: pca_hub, number: 1, mode: OUTPUT }
+    internal: true
+    restore_mode: ALWAYS_OFF
+
+  - platform: gpio
+    id: relay_3_raw
+    pin: { pca9554: pca_hub, number: 2, mode: OUTPUT }
+    internal: true
+    restore_mode: ALWAYS_OFF
+
+  - platform: gpio
+    id: relay_4_raw
+    pin: { pca9554: pca_hub, number: 3, mode: OUTPUT }
+    internal: true
+    restore_mode: ALWAYS_OFF
+
+  # --- USER FACING SWITCHES (With Interlock) ---
+  - platform: template
+    name: "Relay 1"
+    lambda: 'return id(relay_1_raw).state;'
+    turn_on_action:
+      - if:
+          condition:
+            lambda: 'return id(relay_1_fault_latched);'
+          then:
+            - logger.log: { level: WARN, format: "BLOCK: Relay 1 Fault active!" }
+          else:
+            - switch.turn_on: relay_1_raw
+    turn_off_action:
+      - switch.turn_off: relay_1_raw
+
+  - platform: template
+    name: "Relay 2"
+    lambda: 'return id(relay_2_raw).state;'
+    turn_on_action:
+      - if:
+          condition:
+            lambda: 'return id(relay_2_fault_latched);'
+          then:
+            - logger.log: { level: WARN, format: "BLOCK: Relay 2 Fault active!" }
+          else:
+            - switch.turn_on: relay_2_raw
+    turn_off_action:
+      - switch.turn_off: relay_2_raw
+
+  - platform: template
+    name: "Relay 3"
+    lambda: 'return id(relay_3_raw).state;'
+    turn_on_action:
+      - if:
+          condition:
+            lambda: 'return id(relay_3_fault_latched);'
+          then:
+            - logger.log: { level: WARN, format: "BLOCK: Relay 3 Fault active!" }
+          else:
+            - switch.turn_on: relay_3_raw
+    turn_off_action:
+      - switch.turn_off: relay_3_raw
+
+  - platform: template
+    name: "Relay 4"
+    lambda: 'return id(relay_4_raw).state;'
+    turn_on_action:
+      - if:
+          condition:
+            lambda: 'return id(relay_4_fault_latched);'
+          then:
+            - logger.log: { level: WARN, format: "BLOCK: Relay 4 Fault active!" }
+          else:
+            - switch.turn_on: relay_4_raw
+    turn_off_action:
+      - switch.turn_off: relay_4_raw
+
+binary_sensor:
+  # --- HARDWARE FAULT DETECTION ---
+  - platform: gpio
+    pin: { pca9554: pca_hub, number: 4, mode: INPUT, inverted: true }
+    id: hw_fault_1
+    internal: true
+    on_press:
+      then:
+        - globals.set: { id: relay_1_fault_latched, value: 'true' }
+        - switch.turn_off: relay_1_raw
+        - binary_sensor.template.publish: { id: relay_1_health_ui, state: ON }
+        - logger.log: { level: ERROR, format: "CRITICAL: Relay 1 Fault Latched" }
+
+  - platform: gpio
+    pin: { pca9554: pca_hub, number: 5, mode: INPUT, inverted: true }
+    id: hw_fault_2
+    internal: true
+    on_press:
+      then:
+        - globals.set: { id: relay_2_fault_latched, value: 'true' }
+        - switch.turn_off: relay_2_raw
+        - binary_sensor.template.publish: { id: relay_2_health_ui, state: ON }
+        - logger.log: { level: ERROR, format: "CRITICAL: Relay 2 Fault Latched" }
+
+  - platform: gpio
+    pin: { pca9554: pca_hub, number: 6, mode: INPUT, inverted: true }
+    id: hw_fault_3
+    internal: true
+    on_press:
+      then:
+        - globals.set: { id: relay_3_fault_latched, value: 'true' }
+        - switch.turn_off: relay_3_raw
+        - binary_sensor.template.publish: { id: relay_3_health_ui, state: ON }
+        - logger.log: { level: ERROR, format: "CRITICAL: Relay 3 Fault Latched" }
+
+  - platform: gpio
+    pin: { pca9554: pca_hub, number: 7, mode: INPUT, inverted: true }
+    id: hw_fault_4
+    internal: true
+    on_press:
+      then:
+        - globals.set: { id: relay_4_fault_latched, value: 'true' }
+        - switch.turn_off: relay_4_raw
+        - binary_sensor.template.publish: { id: relay_4_health_ui, state: ON }
+        - logger.log: { level: ERROR, format: "CRITICAL: Relay 4 Fault Latched" }
+
+  # --- UI HEALTH SENSORS ---
+  - platform: template
+    name: "Relay 1 Health"
+    id: relay_1_health_ui
+    device_class: problem
+    lambda: 'return id(relay_1_fault_latched);'
+
+  - platform: template
+    name: "Relay 2 Health"
+    id: relay_2_health_ui
+    device_class: problem
+    lambda: 'return id(relay_2_fault_latched);'
+
+  - platform: template
+    name: "Relay 3 Health"
+    id: relay_3_health_ui
+    device_class: problem
+    lambda: 'return id(relay_3_fault_latched);'
+
+  - platform: template
+    name: "Relay 4 Health"
+    id: relay_4_health_ui
+    device_class: problem
+    lambda: 'return id(relay_4_fault_latched);'
+
+button:
+  - platform: template
+    name: "Reset All Faults"
+    icon: "mdi:shield-check"
+    on_press:
+      then:
+        - globals.set: { id: relay_1_fault_latched, value: 'false' }
+        - globals.set: { id: relay_2_fault_latched, value: 'false' }
+        - globals.set: { id: relay_3_fault_latched, value: 'false' }
+        - globals.set: { id: relay_4_fault_latched, value: 'false' }
+        - binary_sensor.template.publish: { id: relay_1_health_ui, state: OFF }
+        - binary_sensor.template.publish: { id: relay_2_health_ui, state: OFF }
+        - binary_sensor.template.publish: { id: relay_3_health_ui, state: OFF }
+        - binary_sensor.template.publish: { id: relay_4_health_ui, state: OFF }
+        - logger.log: "Protection reset. Relays may now be operated."
